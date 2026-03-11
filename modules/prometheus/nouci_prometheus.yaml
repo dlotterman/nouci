@@ -1,6 +1,7 @@
 runcmd:
     - [systemctl, daemon-reload]
     - [systemctl, enable, --now, nouci_prometheus.service]
+    - [ufw, allow, from, 172.16.16.249, to, any, port, 9090]
 
 write_files:
     - path: /etc/systemd/system/nouci_prometheus.service
@@ -45,11 +46,11 @@ write_files:
           scrape_configs:
             - job_name: "prometheus"
               static_configs:
-                - targets: ["nouci0:9090"]
+                - targets: ["172.16.16.249:9090"]
                   labels:
                     app: "prometheus"
             - job_name: nouci0
               static_configs:
-                - targets: ['nouci0:9100']
+                - targets: ['172.16.16.249:9100']
                   labels:
                     app: "node_exporter"
