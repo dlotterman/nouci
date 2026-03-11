@@ -1,0 +1,33 @@
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, nouci_grafana.service]
+
+write_files:
+    - path: /etc/systemd/system/nouci_grafana.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_grafana
+          Requires=nouci_prometheus.service docker.service network-online.target
+          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          [Service]
+          Type=simple
+          Restart=on-failure
+          RestartSec=15
+          StartLimitIntervalSec=300
+          StartLimitBurst=5
+          ExecStartPre=-/usr/bin/docker stop nouci_grafana
+          ExecStartPre=-/usr/bin/docker rm nouci_grafana
+          ExecStartPre=docker image pull grafana/grafana
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data /mnt/opt/nouci_data/grafana/config
+          ExecStart=docker run --name nouci_grafana \
+          -p 9090:9090  \
+          -v /mnt/opt/nouci_data/grafana/data:/grafana/data \
+          -v /mnt/opt/nouci_data/grafana/config:/grafana/config \
+          grafana/grafana
+          ExecStop=/usr/bin/docker stop -t 30 nouci_grafana
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target

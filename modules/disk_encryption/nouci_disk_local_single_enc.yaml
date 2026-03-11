@@ -1,0 +1,34 @@
+#
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, nouci_disk_enc_first_boot.service]
+
+write_files:
+    - path: /etc/systemd/system/nouci_disk_enc_first_boot.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_disk_enc_first_boot
+          Requires=nouci_disk_local_first_boot.service cloud-init.service cloud-config.service cloud-init.target
+          ConditionPathExists=!/opt/nouci/var/lock/nouci_data_enc.lock
+          [Service]
+          Type=oneshot
+          RemainAfterExit=yes
+          ExecStartPre=mkdir -p /opt/nouci/var/lock
+          ExecStartPre=mkdir -p /opt/nouci/.s
+          ExecStart=/bin/bash -c 'cp /etc/hostname /opt/nouci/.s/nouci_data_enc.key'
+          ExecStart=cryptsetup luksFormat -q /opt/nouci/images/nouci_data.img --key-file /opt/nouci/.s/nouci_data_enc.key
+          ExecStart=cryptsetup open /opt/nouci/images/nouci_data.img nouci_data_enc --key-file /opt/nouci/.s/nouci_data_enc.key
+          ExecStart=mkfs.xfs -L NOUCI_DATA /dev/mapper/nouci_data_enc
+          ExecStart=/bin/bash -c 'echo "nouci_data_enc /opt/nouci/images/nouci_data.img /opt/nouci/.s/nouci_data_enc.key timeout=8" | tee -a /etc/crypttab'
+          ExecStart=/bin/bash -c 'echo "LABEL=NOUCI_DATA /mnt/opt/nouci_data xfs defaults 0 2" | tee -a /etc/fstab'
+          ExecStart=systemctl daemon-reload
+          ExecStart=mount -a
+          ExecStartPost=touch /opt/nouci/var/lock/nouci_data_enc.lock
+          ExecStartPost=touch /mnt/opt/nouci_data/ready
+          ExecStartPost=systemctl disable nouci_disk_local_single_enc.service
+          [Install]
+          WantedBy=multi-user.target
+
+#

@@ -1,0 +1,34 @@
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, nouci_node_exporter.service]
+
+write_files:
+    - path: /etc/systemd/system/nouci_node_exporter.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_node_exporter
+          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
+          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          [Service]
+          Type=simple
+          Restart=on-failure
+          RestartSec=15
+          StartLimitIntervalSec=300
+          StartLimitBurst=5
+          ExecStartPre=-/usr/bin/docker stop nouci_node_exporter
+          ExecStartPre=-/usr/bin/docker rm nouci_node_exporter
+          ExecStartPre=docker image pull prom/node-exporter
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/node_exporter/data /mnt/opt/nouci_data/node_exporter/config
+          ExecStart=docker run --name nouci_node_exporter \
+          -p 9100:9100  \
+          -v /mnt/opt/nouci_data/node_exporter/data:/node_exporter/data \
+          -v /mnt/opt/nouci_data/node_exporter/config:/node_exporter/config \
+          --path.rootfs=/host \
+          quay.io/prometheus/node-exporter:latest
+          ExecStop=/usr/bin/docker stop -t 30 nouci_node_exporter
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target

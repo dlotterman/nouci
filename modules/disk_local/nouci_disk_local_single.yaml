@@ -1,0 +1,26 @@
+#
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, nouci_disk_local_first_boot.service]
+
+write_files:
+    - path: /etc/systemd/system/nouci_disk_local_first_boot.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_disk_local_first_boot
+          Before=nouci_disk_enc_first_boot.service
+          Requires=cloud-init.service cloud-config.service cloud-init.target
+          ConditionPathExists=!/opt/nouci/images/nouci_data.img
+          [Service]
+          Type=oneshot
+          RemainAfterExit=yes
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data
+          ExecStartPre=mkdir -p /opt/nouci/images
+          ExecStart=truncate -s 10G /opt/nouci/images/nouci_data.img
+          ExecStartPost=systemctl disable nouci_disk_local_first_boot.service
+          [Install]
+          WantedBy=multi-user.target nouci_disk_local_enc_first_boot.service
+
+#
