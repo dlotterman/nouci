@@ -22,7 +22,7 @@ write_files:
           ExecStartPre=docker image pull grafana/grafana
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data /mnt/opt/nouci_data/grafana/config
           ExecStart=docker run --name nouci_grafana \
-          -p 9090:9090  \
+          -p 3000:3000  \
           -v /mnt/opt/nouci_data/grafana/data:/grafana/data \
           -v /mnt/opt/nouci_data/grafana/config:/grafana/config \
           grafana/grafana

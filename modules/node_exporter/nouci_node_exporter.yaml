@@ -19,14 +19,17 @@ write_files:
           StartLimitBurst=5
           ExecStartPre=-/usr/bin/docker stop nouci_node_exporter
           ExecStartPre=-/usr/bin/docker rm nouci_node_exporter
-          ExecStartPre=docker image pull prom/node-exporter
+          ExecStartPre=docker image pull quay.io/prometheus/node-exporter:latest
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/node_exporter/data /mnt/opt/nouci_data/node_exporter/config
           ExecStart=docker run --name nouci_node_exporter \
           -p 9100:9100  \
+          --net="host" \
+          --pid="host" \
+          -v "/:/host:ro,rslave" \
           -v /mnt/opt/nouci_data/node_exporter/data:/node_exporter/data \
           -v /mnt/opt/nouci_data/node_exporter/config:/node_exporter/config \
-          --path.rootfs=/host \
-          quay.io/prometheus/node-exporter:latest
+          quay.io/prometheus/node-exporter:latest \
+          --path.rootfs=/host
           ExecStop=/usr/bin/docker stop -t 30 nouci_node_exporter
           TimeoutStartSec=120
           TimeoutStopSec=45

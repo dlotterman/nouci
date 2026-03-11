@@ -20,14 +20,36 @@ write_files:
           ExecStartPre=-/usr/bin/docker stop nouci_prometheus
           ExecStartPre=-/usr/bin/docker rm nouci_prometheus
           ExecStartPre=docker image pull prom/prometheus
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/prometheus/data /mnt/opt/nouci_data/prometheus/config
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/prometheus/data
           ExecStart=docker run --name nouci_prometheus \
           -p 9090:9090  \
           -v /mnt/opt/nouci_data/prometheus/data:/prometheus/data \
-          -v /mnt/opt/nouci_data/prometheus/config:/prometheus/config \
+          -v /opt/nouci/prometheus/config/nouci_prometheus.yaml:prometheus.yml \
           prom/prometheus
           ExecStop=/usr/bin/docker stop -t 30 nouci_prometheus
           TimeoutStartSec=120
           TimeoutStopSec=45
           [Install]
           WantedBy=multi-user.target
+
+    - path: /opt/nouci/prometheus/config/nouci_prometheus.yaml
+      owner: root:root
+      append: false
+      content: |
+          # my global config
+          global:
+            scrape_interval: 15s
+            evaluation_interval: 15s
+          alerting:
+            alertmanagers:
+              - static_configs:
+                  - targets:
+          rule_files:
+          scrape_configs:
+            - job_name: "prometheus"
+              static_configs:
+                - targets: ["nouci0:9090"]
+                    app: "prometheus"
+            - job_name: nouci1
+              static_configs:
+              - targets: ['nouci0:9100']
