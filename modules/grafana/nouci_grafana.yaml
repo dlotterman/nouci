@@ -13,18 +13,15 @@ write_files:
           ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
           [Service]
           Type=simple
-          Restart=on-failure
-          RestartSec=15
-          StartLimitIntervalSec=300
-          StartLimitBurst=5
+          Restart=no
           ExecStartPre=-/usr/bin/docker stop nouci_grafana
           ExecStartPre=-/usr/bin/docker rm nouci_grafana
           ExecStartPre=docker image pull grafana/grafana
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data /mnt/opt/nouci_data/grafana/config
           ExecStart=docker run --name nouci_grafana \
           -p 3000:3000  \
-          -v /mnt/opt/nouci_data/grafana/data:/grafana/data \
-          -v /mnt/opt/nouci_data/grafana/config:/grafana/config \
+          --user %u \
+          -v /mnt/opt/nouci_data/grafana/data:/var/lib/grafana \
           grafana/grafana
           ExecStop=/usr/bin/docker stop -t 30 nouci_grafana
           TimeoutStartSec=120

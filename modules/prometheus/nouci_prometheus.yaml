@@ -13,18 +13,16 @@ write_files:
           ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
           [Service]
           Type=simple
-          Restart=on-failure
-          RestartSec=15
-          StartLimitIntervalSec=300
-          StartLimitBurst=5
+          Restart=no
           ExecStartPre=-/usr/bin/docker stop nouci_prometheus
           ExecStartPre=-/usr/bin/docker rm nouci_prometheus
           ExecStartPre=docker image pull prom/prometheus
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/prometheus/data
           ExecStart=docker run --name nouci_prometheus \
           -p 9090:9090  \
-          -v /mnt/opt/nouci_data/prometheus/data:/prometheus/data \
-          -v /opt/nouci/prometheus/config/nouci_prometheus.yaml:prometheus.yml \
+          --user %u \
+          -v /mnt/opt/nouci_data/prometheus/data:/prometheus \
+          -v /opt/nouci/prometheus/config/nouci_prometheus.yaml:/etc/prometheus/prometheus.yml \
           prom/prometheus
           ExecStop=/usr/bin/docker stop -t 30 nouci_prometheus
           TimeoutStartSec=120
@@ -36,7 +34,6 @@ write_files:
       owner: root:root
       append: false
       content: |
-          # my global config
           global:
             scrape_interval: 15s
             evaluation_interval: 15s
@@ -49,7 +46,10 @@ write_files:
             - job_name: "prometheus"
               static_configs:
                 - targets: ["nouci0:9090"]
+                  labels:
                     app: "prometheus"
-            - job_name: nouci1
+            - job_name: nouci0
               static_configs:
-              - targets: ['nouci0:9100']
+                - targets: ['nouci0:9100']
+                  labels:
+                    app: "node_exporter"

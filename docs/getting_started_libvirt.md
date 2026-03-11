@@ -49,12 +49,12 @@ ssh -i ~/.ssh/dlotterman_org ubuntu@192.168.122.94
 
 If rootless:
 ```
-virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::2225-:22'
+virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::2222-:22'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::3000-:3000'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9100-:9100'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9090-:9090'
 sed -i '/localhost/d' ~/.ssh/known_hosts
-ssh -i ~/.ssh/dlotterman_org -p 2225 ubuntu@localhost
+ssh -i ~/.ssh/dlotterman_org -p 2222 ubuntu@localhost
 ```
 
 rootless network info:

@@ -27,7 +27,7 @@ write_files:
           ExecStart=mount -a
           ExecStartPost=touch /opt/nouci/var/lock/nouci_data_enc.lock
           ExecStartPost=touch /mnt/opt/nouci_data/ready
-          ExecStartPost=systemctl disable nouci_disk_local_single_enc.service
+          ExecStartPost=systemctl disable nouci_disk_enc_first_boot.service
           [Install]
           WantedBy=multi-user.target
 

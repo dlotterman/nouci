@@ -139,17 +139,17 @@ write_files:
           Name=nouci0
           Kind=dummy
 
-    - path: /etc/systemd/network/10-nouci0.netdev
+    - path: /etc/systemd/network/20-nouci0.network
       permissions: "0644"
       content: |
           [Match]
           Name=nouci0
-
           [Network]
-          Address=172.16.16.1
+          Address=172.16.16.249/31
 
     - path: /etc/hosts
+      append: true
       content: |
-          172.16.16.1 nouci0
+          172.16.16.249 nouci0
 
 #
