@@ -18,14 +18,34 @@ write_files:
           ExecStartPre=-/usr/bin/docker stop nouci_grafana
           ExecStartPre=-/usr/bin/docker rm nouci_grafana
           ExecStartPre=docker image pull grafana/grafana
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data /mnt/opt/nouci_data/grafana/config
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data
           ExecStart=docker run --name nouci_grafana \
           -p 3000:3000  \
           --user %u \
           -v /mnt/opt/nouci_data/grafana/data:/var/lib/grafana \
+          -v /opt/nouci/grafana/config/nouci_prometheus.yaml:/etc/grafana/provisioning/datasources/nouci_prometheus.yaml \
           grafana/grafana
           ExecStop=/usr/bin/docker stop -t 30 nouci_grafana
           TimeoutStartSec=120
           TimeoutStopSec=45
           [Install]
           WantedBy=multi-user.target
+
+    - path: /opt/nouci/grafana/config/nouci_prometheus.yaml
+      owner: root:root
+      append: false
+      content: |
+          apiVersion: 1
+          datasources:
+            - name: nouci_prometheus
+              type: prometheus
+              access: proxy
+              # Access mode - proxy (server in the UI) or direct (browser in the UI).
+              url: http://localhost:9090
+              jsonData:
+                httpMethod: POST
+                manageAlerts: true
+                prometheusType: Prometheus
+                cacheLevel: 'High'
+                disableRecordingRules: false
+                incrementalQueryOverlapWindow: 10m
