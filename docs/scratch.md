@@ -33,13 +33,13 @@ virt-install --name nouci1 \
     --memory 4096 \
     --os-variant ubuntunoble \
     --disk=size=12,backing_store=""$NUOCI_DATA_DIR"/images/nuoci1.img" \
-    --network default,mac=a2:34:89:d0:4d:69 \
+    --network default,mac=a2:34:89:d0:4e:69 \
     --cloud-init user-data="$(pwd)/nouci.yaml" \
     --noautoconsole
 
 virsh domifaddr --domain nouci1
 sed -i '/94/d' ~/.ssh/known_hosts
-ssh -i ~/.ssh/dlotterman_org ubuntu@192.168.122.94
+ssh -i ~/.ssh/dlotterman_org ubuntu@192.168.122.167
 
 
 ```
