@@ -1,0 +1,79 @@
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, nouci_blackbox_exporter.service]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9115]
+
+write_files:
+    - path: /etc/systemd/system/nouci_blackbox_exporter.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_blackbox_exporter
+          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
+          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          [Service]
+          Type=simple
+          Restart=no
+          ExecStartPre=-/usr/bin/docker stop nouci_blackbox_exporter
+          ExecStartPre=-/usr/bin/docker rm nouci_blackbox_exporter
+          ExecStartPre=docker image pull quay.io/prometheus/blackbox-exporter:latest
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/blackbox_exporter/data /mnt/opt/nouci_data/blackbox_exporter/config
+          ExecStart=docker run --name nouci_blackbox_exporter \
+          -p 9115:9115 \
+          quay.io/prometheus/blackbox-exporter:latest
+          ExecStop=/usr/bin/docker stop -t 30 nouci_blackbox_exporter
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target
+
+    - path: /opt/nouci/prometheus/config/scrape_d/blackbox_exporter_base.yaml
+      owner: root:root
+      append: false
+      content: |
+          scrape_configs:
+            - job_name: 'nouci_blackbox_exporter_base'
+              metrics_path: /probe
+              params:
+                module: [http_2xx]  # Look for a HTTP 200 response.
+              static_configs:
+                - targets:
+                  - http://prometheus.io    # Target to probe with http.
+                  - https://prometheus.io   # Target to probe with https.
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
+            - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+              static_configs:
+                - targets: ['172.16.16.249:9115']
+
+    - path: /opt/nouci/blackbox_exporter/bin/nouci_bbe_gen.sh
+      owner: root:root
+      append: false
+      content: |
+          #!/bin/bash
+          DR=$(ip route show default | awk '{print$3}')
+          DNS=$(resolvectl dns | awk '{print$4}' | grep -v -e '^$' | sort | uniq)
+          mkdir -p /opt/nouci/prometheus/config/scrape_d
+          cat > /opt/nouci/prometheus/config/scrape_d/default_route_backbox.yaml << EOL
+          scrape_configs:
+            - job_name: 'nouci_blackbox_default_route'
+              metrics_path: /probe
+              params:
+                module: [icmp]
+              static_configs:
+                - targets:
+                  - $DR
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115
+          EOL

@@ -42,10 +42,3 @@ write_files:
               access: proxy
               # Access mode - proxy (server in the UI) or direct (browser in the UI).
               url: http://172.16.16.249:9090
-              jsonData:
-                httpMethod: POST
-                manageAlerts: true
-                prometheusType: Prometheus
-                cacheLevel: 'High'
-                disableRecordingRules: false
-                incrementalQueryOverlapWindow: 10m

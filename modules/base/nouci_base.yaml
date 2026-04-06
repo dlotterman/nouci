@@ -34,6 +34,8 @@ packages:
     - curl
     - software-properties-common
     - gnupg-agent
+    - sqlite3
+    - yq
 
 groups:
     - netops

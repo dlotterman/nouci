@@ -1,7 +1,7 @@
 # Getting started with libvirt
 
 ```
-git clone https://github.com/dlotterman/nouci && cd nuoci
+git clone https://github.com/dlotterman/nouci && cd nouci
 open init/nouci_init.yaml
 ```
 * Substitue `open` for your editor of choice
@@ -10,10 +10,10 @@ Edit `nouci_init.yaml` to provide either your [Github](https://docs.github.com/e
 
 
 ```
-NUOCI_DATA_DIR=/var/tmp/nuoci
-mkdir -p "$NUOCI_DATA_DIR"/images/
-wget -O "$NUOCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-cp -f "$NUOCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  "$NUOCI_DATA_DIR"/images/nuoci1.img
+NOUCI_DATA_DIR=/var/tmp/nouci
+mkdir -p "$NOUCI_DATA_DIR"/images/
+wget -O "$NOUCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+cp -f "$NOUCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  "$NOUCI_DATA_DIR"/images/nouci1.img
 ```
 * `/var/tmp` is chosen because its user writeable but outside users home directory, replace as needed.
 
@@ -23,10 +23,25 @@ wget -O ~/.local/bin/yq4 https://github.com/mikefarah/yq/releases/download/v4.52
 chmod +x ~/.local/bin/yq4
 ```
 
+## Configure nouci
+Edit the init file:
+
+For unsecure / debug installations:
+```
+open modules/init/nouci_init_root.yaml
+```
+
 
 ## Build nouci.yaml
 ```
- ~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init_root.yaml modules/base/nouci_base.yaml modules/disk_local/nouci_disk_local_single.yaml  modules/disk_encryption/nouci_disk_local_single_enc.yaml modules/node_exporter/nouci_node_exporter.yaml modules/prometheus/nouci_prometheus.yaml modules/grafana/nouci_grafana.yaml | tee nouci.yaml
+~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init_root.yaml \
+modules/base/nouci_base.yaml \
+modules/disk_local/nouci_disk_local_single.yaml  \
+modules/disk_encryption/nouci_disk_local_single_enc.yaml \
+modules/node_exporter/nouci_node_exporter.yaml \
+modules/prometheus/nouci_prometheus.yaml \
+modules/blackbox_exporter/nouci_blackbox_exporter.yaml \
+modules/grafana/nouci_grafana.yaml | tee nouci.yaml
 ```
 
 ## Launch nouci1
@@ -34,7 +49,7 @@ chmod +x ~/.local/bin/yq4
 virt-install --name nouci1 \
     --memory 4096 \
     --os-variant ubuntunoble \
-    --disk=size=12,backing_store=""$NUOCI_DATA_DIR"/images/nuoci1.img" \
+    --disk=size=12,backing_store=""$NOUCI_DATA_DIR"/images/nouci1.img" \
     --network default \
     --cloud-init user-data="$(pwd)/nouci.yaml" \
     --noautoconsole

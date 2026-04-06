@@ -20,7 +20,7 @@ write_files:
           ExecStartPre=docker image pull quay.io/prometheus/node-exporter:latest
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/node_exporter/data /mnt/opt/nouci_data/node_exporter/config
           ExecStart=docker run --name nouci_node_exporter \
-          -p 9100:9100  \
+          -p 9100:9100 \
           --net="host" \
           --pid="host" \
           -v "/:/host:ro,rslave" \
