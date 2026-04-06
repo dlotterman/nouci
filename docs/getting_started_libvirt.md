@@ -38,9 +38,10 @@ open modules/init/nouci_init_root.yaml
 modules/base/nouci_base.yaml \
 modules/disk_local/nouci_disk_local_single.yaml  \
 modules/disk_encryption/nouci_disk_local_single_enc.yaml \
-modules/node_exporter/nouci_node_exporter.yaml \
 modules/prometheus/nouci_prometheus.yaml \
+modules/node_exporter/nouci_node_exporter.yaml \
 modules/blackbox_exporter/nouci_blackbox_exporter.yaml \
+modules/blackbox_exporter/nouci_snmp_exporter.yaml \
 modules/grafana/nouci_grafana.yaml | tee nouci.yaml
 ```
 

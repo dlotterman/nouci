@@ -1,0 +1,87 @@
+packages:
+    - snmpd
+    - snmp
+    - snmp-mibs-downloader
+    - libsnmp-dev
+
+runcmd:
+    - [systemctl, daemon-reload]
+    - [systemctl, enable, --now, snmpd.service]
+    - [systemctl, enable, --now, nouci_snmp_exporter.service]
+    - [systemctl, enable, --now, snmpd.service]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9116]
+
+write_files:
+    - path: /etc/systemd/system/nouci_snmp_exporter.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_snmp_exporter
+          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
+          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          [Service]
+          Type=simple
+          Restart=no
+          ExecStartPre=-/usr/bin/docker stop nouci_snmp_exporter
+          ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
+          ExecStartPre=docker image pull quay.io/prom/snmp-exporter:main-distroless
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
+          ExecStart=docker run --name nouci_snmp_exporter \
+          -p 9115:9115 \
+          quay.io/prom/snmp-exporter:main-distroless
+          ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target
+
+    - path: /etc/snmp/snmpd.conf
+      owner: root:root
+      append: false
+      content: |
+          sysLocation    nouci_hosted
+          sysContact     root@localhost
+          sysServices    72
+          master  agentx
+          agentaddress  172.16.16.249
+          view   systemonly  included   .1.3.6.1.2.1.1
+          view   systemonly  included   .1.3.6.1.2.1.25.1
+          rocommunity  public default -V systemonly
+          rouser authPrivUser authpriv -V systemonly
+          ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
+          ExecStartPre=docker image pull quay.io/prom/snmp-exporter:main-distroless
+          ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
+          ExecStart=docker run --name nouci_snmp_exporter \
+          -p 9115:9115 \
+          quay.io/prom/snmp-exporter:main-distroless
+          ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target
+
+    - path: /opt/nouci/prometheus/config/scrape_d/snmp_exporter_base.yaml
+      owner: root:root
+      append: false
+      content: |
+          scrape_configs:
+            - job_name: 'nouci_snmp_exporter_targets'
+              static_configs:
+                - targets:
+                  - 172.16.16.249  # SNMP device.
+              metrics_path: /snmp
+              params:
+                auth: [public_v2]
+                module: [if_mib]
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9116  # The SNMP exporter's real hostname:port.
+            # Global exporter-level metrics
+            - job_name: 'nouci_snmp_exporter'
+              static_configs:
+                - targets: ['172.16.16.249:9116']
