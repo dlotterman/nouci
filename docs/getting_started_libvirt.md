@@ -41,7 +41,7 @@ modules/disk_encryption/nouci_disk_local_single_enc.yaml \
 modules/prometheus/nouci_prometheus.yaml \
 modules/node_exporter/nouci_node_exporter.yaml \
 modules/blackbox_exporter/nouci_blackbox_exporter.yaml \
-modules/blackbox_exporter/nouci_snmp_exporter.yaml \
+modules/snmp_exporter/nouci_snmp_exporter.yaml \
 modules/grafana/nouci_grafana.yaml | tee nouci.yaml
 ```
 

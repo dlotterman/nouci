@@ -28,7 +28,7 @@ write_files:
           ExecStartPre=docker image pull quay.io/prom/snmp-exporter:main-distroless
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
           ExecStart=docker run --name nouci_snmp_exporter \
-          -p 9115:9115 \
+          -p 9116:9116 \
           quay.io/prom/snmp-exporter:main-distroless
           ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
           TimeoutStartSec=120
@@ -49,17 +49,6 @@ write_files:
           view   systemonly  included   .1.3.6.1.2.1.25.1
           rocommunity  public default -V systemonly
           rouser authPrivUser authpriv -V systemonly
-          ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
-          ExecStartPre=docker image pull quay.io/prom/snmp-exporter:main-distroless
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
-          ExecStart=docker run --name nouci_snmp_exporter \
-          -p 9115:9115 \
-          quay.io/prom/snmp-exporter:main-distroless
-          ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
-          TimeoutStartSec=120
-          TimeoutStopSec=45
-          [Install]
-          WantedBy=multi-user.target
 
     - path: /opt/nouci/prometheus/config/scrape_d/snmp_exporter_base.yaml
       owner: root:root
