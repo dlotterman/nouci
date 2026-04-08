@@ -69,6 +69,9 @@ virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::2222-:22'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::3000-:3000'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9100-:9100'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9090-:9090'
+virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9115-:9115'
+virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9116-:9116'
+virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::9089-:9089'
 sed -i '/localhost/d' ~/.ssh/known_hosts
 ssh -i ~/.ssh/dlotterman_org -p 2222 ubuntu@localhost
 ```

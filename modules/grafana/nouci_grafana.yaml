@@ -3,10 +3,9 @@ runcmd:
     - [systemctl, enable, --now, nouci_grafana.service]
     - [ufw, allow, from, 172.17.0.1/16, to, any, port, 3000]
     - [
-          wget,
-          -O,
-          /opt/nouci/grafana/config/nouci_node_exporter_dash.json,
-          https://grafana.com/api/dashboards/1860/revisions/43/download,
+          cp,
+          /opt/nouci/nouci/modules/grafana/assets/1860_revision_43.json,
+          /opt/nouci/grafana/config/1860_revision_43.json,
       ]
 
 write_files:
@@ -49,3 +48,5 @@ write_files:
               access: proxy
               # Access mode - proxy (server in the UI) or direct (browser in the UI).
               url: http://172.16.16.249:9090
+              isDefault: true
+              editable: true

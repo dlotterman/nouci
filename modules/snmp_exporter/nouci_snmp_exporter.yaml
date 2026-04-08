@@ -3,12 +3,26 @@ packages:
     - snmp
     - snmp-mibs-downloader
     - libsnmp-dev
+    - libsnmp-base
 
 runcmd:
     - [systemctl, daemon-reload]
+    - [
+          net-snmp-create-v3-user,
+          -ro,
+          -A,
+          Megaport06,
+          -a,
+          SHA,
+          -X,
+          EncryptPass,
+          -x,
+          AES,
+          nouci-snmp-user,
+      ]
     - [systemctl, enable, --now, snmpd.service]
-    - [systemctl, enable, --now, nouci_snmp_exporter.service]
-    - [systemctl, enable, --now, snmpd.service]
+
+    #- [systemctl, enable, --now, nouci_snmp_exporter.service]
     - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9116]
 
 write_files:
@@ -25,11 +39,13 @@ write_files:
           Restart=no
           ExecStartPre=-/usr/bin/docker stop nouci_snmp_exporter
           ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
-          ExecStartPre=docker image pull quay.io/prom/snmp-exporter:main-distroless
+          ExecStartPre=docker image pull docker.io/prom/snmp-exporter:main-distroless
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
           ExecStart=docker run --name nouci_snmp_exporter \
           -p 9116:9116 \
-          quay.io/prom/snmp-exporter:main-distroless
+          -v /opt/nouci/nouci/modules/snmp_exporter/assets/snmp.yml:/etc/snmp_exporter/snmp.yml:ro \
+          -v /opt/nouci/nouci/modules/snmp_exporter/assets/auth.yml:/etc/snmp_exporter/auth.yml:ro \
+          docker.io/prom/snmp-exporter:main-distroless --config.file /etc/snmp_exporter/snmp.yml --config.file /etc/snmp_exporter/auth.yml
           ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
           TimeoutStartSec=120
           TimeoutStopSec=45
@@ -47,8 +63,8 @@ write_files:
           agentaddress  172.16.16.249
           view   systemonly  included   .1.3.6.1.2.1.1
           view   systemonly  included   .1.3.6.1.2.1.25.1
-          rocommunity  public default -V systemonly
-          rouser authPrivUser authpriv -V systemonly
+          rocommunity  public
+          rouser authPrivUser authpriv
 
     - path: /opt/nouci/prometheus/config/scrape_d/snmp_exporter_base.yaml
       owner: root:root

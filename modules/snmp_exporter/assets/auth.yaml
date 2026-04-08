@@ -1,0 +1,9 @@
+auths:
+    nouci: # the name of the auth
+        version: 3
+        username: "nouci-snmp-user"
+        security_level: authPriv
+        auth_protocol: SHA
+        password: "S3cretPassword"
+        priv_protocol: AES
+        priv_password: "EncryptPass"

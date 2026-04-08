@@ -36,6 +36,12 @@ packages:
     - gnupg-agent
     - sqlite3
     - yq
+    - cockpit
+    - cockpit-doc
+    - cockpit-storaged
+    - cockpit-machines
+    - cockpit-sosreport
+    - cockpit-system
 
 groups:
     - netops
@@ -44,9 +50,12 @@ runcmd:
     - yes | unminimize  &
     - [systemctl, enable, --now, fail2ban]
     - [systemctl, enable, --now, unattended-upgrades]
+    - [systemctl, enable, --now, cockpit.socket]
     - [systemctl, enable, --now, ssh]
     - [ufw, --force, enable]
     - [apt, update]
+    - [mkdir, -p, /opt/nouci/]
+    - [git, clone, https://github.com/dlotterman/nouci, /opt/nouci/nouci]
     - [
           apt,
           install,
@@ -153,5 +162,12 @@ write_files:
       append: true
       content: |
           172.16.16.249 nouci0
+
+    - path: /etc/systemd/system/cockpit.socket.d/listen.conf
+      permissions: "0644"
+      content: |
+          [Socket]
+          ListenStream=
+          ListenStream=9089
 
 #

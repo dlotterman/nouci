@@ -19,7 +19,6 @@ write_files:
           ExecStartPre=-/usr/bin/docker stop nouci_blackbox_exporter
           ExecStartPre=-/usr/bin/docker rm nouci_blackbox_exporter
           ExecStartPre=docker image pull quay.io/prometheus/blackbox-exporter:latest
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/blackbox_exporter/data /mnt/opt/nouci_data/blackbox_exporter/config
           ExecStart=docker run --name nouci_blackbox_exporter \
           -p 9115:9115 \
           quay.io/prometheus/blackbox-exporter:latest
@@ -34,7 +33,7 @@ write_files:
       append: false
       content: |
           scrape_configs:
-            - job_name: 'nouci_blackbox_exporter_http_2xx'
+            - job_name: 'blackbox_exporter_http_2xx'
               metrics_path: /probe
               params:
                 module: [http_2xx]  # Look for a HTTP 200 response.
@@ -49,7 +48,7 @@ write_files:
                   target_label: instance
                 - target_label: __address__
                   replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
-            - job_name: 'nouci_blackbox_exporter'  # collect blackbox exporter's operational metrics.
+            - job_name: 'blackbox'  # collect blackbox exporter's operational metrics.
               static_configs:
                 - targets: ['172.16.16.249:9115']
 
@@ -63,7 +62,7 @@ write_files:
           mkdir -p /opt/nouci/prometheus/config/scrape_d
           cat > /opt/nouci/prometheus/config/scrape_d/default_route_backbox.yaml << EOL
           scrape_configs:
-            - job_name: 'nouci_blackbox_default_route'
+            - job_name: 'blackbox_default_route'
               metrics_path: /probe
               params:
                 module: [icmp]
