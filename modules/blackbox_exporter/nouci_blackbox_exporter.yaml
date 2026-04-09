@@ -33,7 +33,7 @@ write_files:
       append: false
       content: |
           scrape_configs:
-            - job_name: 'blackbox_exporter_http_2xx'
+            - job_name: 'blackbox'
               metrics_path: /probe
               params:
                 module: [http_2xx]  # Look for a HTTP 200 response.
@@ -41,6 +41,8 @@ write_files:
                 - targets:
                   - http://prometheus.io    # Target to probe with http.
                   - https://prometheus.io   # Target to probe with https.
+                  labels:
+                    app: "blackbox_exporter"
               relabel_configs:
                 - source_labels: [__address__]
                   target_label: __param_target
@@ -48,9 +50,11 @@ write_files:
                   target_label: instance
                 - target_label: __address__
                   replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
-            - job_name: 'blackbox'  # collect blackbox exporter's operational metrics.
+            - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
               static_configs:
                 - targets: ['172.16.16.249:9115']
+                  labels:
+                    app: "blackbox_exporter"
 
     - path: /opt/nouci/blackbox_exporter/bin/nouci_bbe_gen.sh
       owner: root:root
@@ -69,6 +73,8 @@ write_files:
               static_configs:
                 - targets:
                   - $DR
+                  labels:
+                    app: "blackbox_exporter"
               relabel_configs:
                 - source_labels: [__address__]
                   target_label: __param_target

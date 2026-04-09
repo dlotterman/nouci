@@ -7,6 +7,7 @@ packages:
 
 runcmd:
     - [systemctl, daemon-reload]
+    - [systemctl, disable, --now, snmpd.service]
     - [
           net-snmp-create-v3-user,
           -ro,
@@ -21,9 +22,11 @@ runcmd:
           nouci-snmp-user,
       ]
     - [systemctl, enable, --now, snmpd.service]
+    - [systemctl, enable, --now, nouci_snmp_exporter.service]
 
     #- [systemctl, enable, --now, nouci_snmp_exporter.service]
     - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9116]
+    - [ufw, allow, from, 172.17.0.1/16, proto, udp, to, any, port, 161]
 
 write_files:
     - path: /etc/systemd/system/nouci_snmp_exporter.service
@@ -44,7 +47,7 @@ write_files:
           ExecStart=docker run --name nouci_snmp_exporter \
           -p 9116:9116 \
           -v /opt/nouci/nouci/modules/snmp_exporter/assets/snmp.yml:/etc/snmp_exporter/snmp.yml:ro \
-          -v /opt/nouci/nouci/modules/snmp_exporter/assets/auth.yml:/etc/snmp_exporter/auth.yml:ro \
+          -v /opt/nouci/nouci/modules/snmp_exporter/assets/auth.yaml:/etc/snmp_exporter/auth.yml:ro \
           docker.io/prom/snmp-exporter:main-distroless --config.file /etc/snmp_exporter/snmp.yml --config.file /etc/snmp_exporter/auth.yml
           ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
           TimeoutStartSec=120
@@ -71,13 +74,13 @@ write_files:
       append: false
       content: |
           scrape_configs:
-            - job_name: 'nouci_snmp_exporter_targets'
+            - job_name: 'snmp'
               static_configs:
                 - targets:
                   - 172.16.16.249  # SNMP device.
               metrics_path: /snmp
               params:
-                auth: [public_v2]
+                auth: [nouci]
                 module: [if_mib]
               relabel_configs:
                 - source_labels: [__address__]
@@ -87,6 +90,6 @@ write_files:
                 - target_label: __address__
                   replacement: 172.16.16.249:9116  # The SNMP exporter's real hostname:port.
             # Global exporter-level metrics
-            - job_name: 'nouci_snmp_exporter'
+            - job_name: 'snmp_exporter'
               static_configs:
                 - targets: ['172.16.16.249:9116']

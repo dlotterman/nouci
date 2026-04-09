@@ -13,7 +13,8 @@ runcmd:
     - [ufw, allow, from, 10.0.2.2, to, any, port, 9090] # default libvirt rootless network
     - [ufw, allow, from, 192.168.122.0/24, to, any, port, 3000] # default libvirt rootful network
     - [ufw, allow, from, 10.0.2.2, to, any, port, 3000] # default libvirt rootless network
-    - [ufw, allow, from, 192.168.122.0/24, to, any, port, 9089] # default libvirt rootless network
+    - [ufw, allow, from, 192.168.122.0/24, to, any, port, 9089]
+    - [ufw, allow, from, 10.0.2.2, to, any, port, 9089] # default libvirt rootless network
 
 write_files:
     - path: /opt/nouci/etc/nouci_hosts.yaml

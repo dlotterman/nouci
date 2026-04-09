@@ -4,6 +4,6 @@ auths:
         username: "nouci-snmp-user"
         security_level: authPriv
         auth_protocol: SHA
-        password: "S3cretPassword"
+        password: "Megaport06"
         priv_protocol: AES
         priv_password: "EncryptPass"

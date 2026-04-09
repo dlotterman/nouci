@@ -42,6 +42,7 @@ packages:
     - cockpit-machines
     - cockpit-sosreport
     - cockpit-system
+    - cockpit-pcp
 
 groups:
     - netops

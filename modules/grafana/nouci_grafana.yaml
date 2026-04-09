@@ -2,11 +2,6 @@ runcmd:
     - [systemctl, daemon-reload]
     - [systemctl, enable, --now, nouci_grafana.service]
     - [ufw, allow, from, 172.17.0.1/16, to, any, port, 3000]
-    - [
-          cp,
-          /opt/nouci/nouci/modules/grafana/assets/1860_revision_43.json,
-          /opt/nouci/grafana/config/1860_revision_43.json,
-      ]
 
 write_files:
     - path: /etc/systemd/system/nouci_grafana.service
@@ -23,13 +18,12 @@ write_files:
           ExecStartPre=-/usr/bin/docker stop nouci_grafana
           ExecStartPre=-/usr/bin/docker rm nouci_grafana
           ExecStartPre=docker image pull grafana/grafana
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/grafana/data
           ExecStart=docker run --name nouci_grafana \
           -p 3000:3000  \
           --user %u \
-          -v /mnt/opt/nouci_data/grafana/data:/var/lib/grafana \
           -v /opt/nouci/grafana/config/nouci_prometheus.yaml:/etc/grafana/provisioning/datasources/nouci_prometheus.yaml \
-          -v /opt/nouci/grafana/config/nouci_node_exporter_dash.json:/etc/grafana/provisioning/dashboards/nouci_node_exporter_dash.json \
+          -v /opt/nouci/grafana/config/1860_rev43.json:/etc/grafana/provisioning/dashboards-json/1860_rev43.json \
+          -v /opt/nouci/grafana/config/dashboard-provider.yaml:/etc/grafana/provisioning/dashboards/dashboard-provider.yaml
           grafana/grafana
           ExecStop=/usr/bin/docker stop -t 30 nouci_grafana
           TimeoutStartSec=120
@@ -50,3 +44,22 @@ write_files:
               url: http://172.16.16.249:9090
               isDefault: true
               editable: true
+
+    - path: /opt/nouci/grafana/config/dashboard-provider.yaml
+      owner: root:root
+      append: false
+      content: |
+          apiVersion: 1
+
+          providers:
+            - name: 'default'
+              orgId: 1
+              folder: ''
+              folderUid: ''
+              type: file
+              disableDeletion: false
+              updateIntervalSeconds: 30
+              allowUiUpdates: true
+              options:
+                path: /etc/grafana/provisioning/dashboards-json
+                foldersFromFilesStructure: true
