@@ -4,7 +4,7 @@
 git clone https://github.com/dlotterman/nouci && cd nouci
 open init/nouci_init.yaml
 ```
-* Substitue `open` for your editor of choice
+* Substitute `open` for your editor of choice
 
 Edit `nouci_init.yaml` to provide either your [Github](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) (`gh:`) or [Launchpad](https://documentation.ubuntu.com/launchpad/user/how-to/import-ssh-keys/) (`lp:`) username from which to source SSH keys. If you feel inclined, you can also replace this with your own SSH `clout-init`.
 
@@ -24,9 +24,9 @@ chmod +x ~/.local/bin/yq4
 ```
 
 ## Configure nouci
-Edit the init file:
+Edit the init file.
 
-For unsecure / debug installations:
+For insecure / debug installations:
 ```
 open modules/init/nouci_init_root.yaml
 ```
