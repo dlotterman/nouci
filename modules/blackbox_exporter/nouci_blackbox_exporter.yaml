@@ -11,7 +11,7 @@ write_files:
       content: |
           [Unit]
           Description=nouci_blackbox_exporter
-          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
+          After=nouci_disk_enc_first_boot.service docker.service network-online.target
           ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
           [Service]
           Type=simple
@@ -20,8 +20,11 @@ write_files:
           ExecStartPre=-/usr/bin/docker rm nouci_blackbox_exporter
           ExecStartPre=docker image pull quay.io/prometheus/blackbox-exporter:latest
           ExecStart=docker run --name nouci_blackbox_exporter \
+          -v /etc/timezone:/etc/timezone:ro \
+          -v /etc/localtime:/etc/localtime:ro \
+          -v /opt/nouci/blackbox_exporter/nouci_blackbox.yaml:/blackbox.yaml \
           -p 9115:9115 \
-          quay.io/prometheus/blackbox-exporter:latest
+          quay.io/prometheus/blackbox-exporter:latest --config.file=/blackbox.yaml
           ExecStop=/usr/bin/docker stop -t 30 nouci_blackbox_exporter
           TimeoutStartSec=120
           TimeoutStopSec=45
@@ -33,14 +36,25 @@ write_files:
       append: false
       content: |
           scrape_configs:
-            - job_name: 'blackbox'
+            - job_name: 'blackbox_cdn_http'
               metrics_path: /probe
+              scrape_interval: 360s
               params:
                 module: [http_2xx]  # Look for a HTTP 200 response.
               static_configs:
                 - targets:
-                  - http://prometheus.io    # Target to probe with http.
-                  - https://prometheus.io   # Target to probe with https.
+                  - https://prometheus.io   # Cloudflare CDN
+                  - https://techdocs.akamai.com/home # Akamai CDN
+                  - https://www.fastly.com # Fastly
+                  - http://b-cdn.net
+                  - http://google.com
+                  - https://amazon.com
+                  - http://fbcdn.net
+                  - https://cdn.js7k.com #yahoo
+                  - https://storage.yandexcloud.net
+                  - https://alibabacloud.com
+                  - https://www.keycdn.comh
+                  - http://mp4-cdn77.udemycdn.com
                   labels:
                     app: "blackbox_exporter"
               relabel_configs:
@@ -50,11 +64,387 @@ write_files:
                   target_label: instance
                 - target_label: __address__
                   replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
-            - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+            - job_name: 'blackbox_azure_http'
+              metrics_path: /probe
+              scrape_interval: 360s
+              params:
+                module: [http_4xx]  # Look for a HTTP 200 response.
+              static_configs:
+                - targets:
+                  - https://eastus.blob.core.windows.net
+                  - https://australiacentral.blob.core.windows.net
+                  - https://australiaeast.blob.core.windows.net
+                  - https://australiasoutheast.blob.core.windows.net/public/latency-test.json
+                  - https://centralindia.blob.core.windows.net/public/latency-test.json
+                  - https://eastasia.blob.core.windows.net/public/latency-test.json
+                  - https://indonesiacentral.blob.core.windows.net/public/latency-test.json
+                  - https://japaneast.blob.core.windows.net/public/latency-test.json
+                  - https://japanwest.blob.core.windows.net/public/latency-test.json
+                  - https://koreacentral.blob.core.windows.net/public/latency-test.json
+                  - https://koreasouth.blob.core.windows.net/public/latency-test.json
+                  - https://malaysiawest.blob.core.windows.net/public/latency-test.json
+                  - https://newzealandnorth.blob.core.windows.net/public/latency-test.json
+                  - https://southindia.blob.core.windows.net/public/latency-test.json
+                  - https://southeastasia.blob.core.windows.net/public/latency-test.json
+                  - https://westindia.blob.core.windows.net/public/latency-test.json
+                  - https://austriaeast.blob.core.windows.net/public/latency-test.json
+                  - https://francecentral.blob.core.windows.net/public/latency-test.json
+                  - https://germanywestcentral.blob.core.windows.net/public/latency-test.json
+                  - https://italynorth.blob.core.windows.net/public/latency-test.json
+                  - https://northeurope.blob.core.windows.net/public/latency-test.json
+                  - https://norwayeast.blob.core.windows.net/public/latency-test.json
+                  - https://polandcentral.blob.core.windows.net/public/latency-test.json
+                  - https://spaincentral.blob.core.windows.net/public/latency-test.json
+                  - https://swedencentral.blob.core.windows.net/public/latency-test.json
+                  - https://switzerlandnorth.blob.core.windows.net/public/latency-test.json
+                  - https://uksouth.blob.core.windows.net/public/latency-test.json
+                  - https://ukwest.blob.core.windows.net/public/latency-test.json
+                  - https://westeurope.blob.core.windows.net/public/latency-test.json
+                  - https://centralus.blob.core.windows.net/public/latency-test.json
+                  - https://eastus2.blob.core.windows.net/public/latency-test.json
+                  - https://northcentralus.blob.core.windows.net/public/latency-test.json
+                  - https://southcentralus.blob.core.windows.net/public/latency-test.json
+                  - https://westcentralus.blob.core.windows.net/public/latency-test.json
+                  - https://westus.blob.core.windows.net/public/latency-test.json
+                  - https://westus2.blob.core.windows.net/public/latency-test.json
+                  - https://westus3.blob.core.windows.net/public/latency-test.json
+                  - https://qatarcentral.blob.core.windows.net/public/latency-test.json
+                  - https://brazilsouth.blob.core.windows.net/public/latency-test.json
+                  - https://chilecentral.blob.core.windows.net/public/latency-test.json
+                  - https://canadacentrals.blob.core.windows.net/public/latency-test.json
+                  - https://canadaeast.blob.core.windows.net/public/latency-test.json
+                  - https://mexicocentral.blob.core.windows.net/public/latency-test.json
+                  - https://southafricanorth.blob.core.windows.net/public/latency-test.json
+                  labels:
+                    app: "blackbox_exporter"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
+            - job_name: 'blackbox_gcp_http'
+              metrics_path: /probe
+              scrape_interval: 360s
+              params:
+                module: [http_2xx]  # Look for a HTTP 200 response.
+              static_configs:
+                - targets:
+                  - https://global.gcping.com
+                  - https://asia-east1-5tkroniexa-de.a.run.app
+                  - https://asia-east2-5tkroniexa-df.a.run.app
+                  - https://asia-northeast1-5tkroniexa-an.a.run.app
+                  - https://asia-northeast2-5tkroniexa-dt.a.run.app
+                  - https://asia-northeast3-5tkroniexa-du.a.run.app
+                  - https://asia-south1-5tkroniexa-el.a.run.app
+                  - https://asia-south2-5tkroniexa-em.a.run.app
+                  - https://asia-southeast1-5tkroniexa-as.a.run.app
+                  - https://asia-southeast2-5tkroniexa-et.a.run.app
+                  - https://australia-southeast1-5tkroniexa-ts.a.run.app
+                  - https://australia-southeast2-5tkroniexa-km.a.run.app
+                  - https://europe-central2-5tkroniexa-lm.a.run.app
+                  - https://europe-north1-5tkroniexa-lz.a.run.app
+                  - https://europe-west1-5tkroniexa-ew.a.run.app
+                  - https://europe-west2-5tkroniexa-nw.a.run.app
+                  - https://europe-west3-5tkroniexa-ey.a.run.app
+                  - https://europe-west4-5tkroniexa-ez.a.run.app
+                  - https://europe-west6-5tkroniexa-oa.a.run.app
+                  - https://europe-west8-5tkroniexa-oc.a.run.app
+                  - https://europe-west9-5tkroniexa-od.a.run.app
+                  - https://europe-west10-5tkroniexa-oe.a.run.app
+                  - https://europe-southwest1-5tkroniexa-no.a.run.app
+                  - https://me-west1-5tkroniexa-zf.a.run.app/
+                  - https://northamerica-northeast1-5tkroniexa-nn.a.run.app
+                  - https://northamerica-northeast2-5tkroniexa-pd.a.run.app
+                  - https://southamerica-east1-5tkroniexa-rj.a.run.app
+                  - https://southamerica-west1-5tkroniexa-tl.a.run.app
+                  - https://us-central1-5tkroniexa-uc.a.run.app
+                  - https://us-east1-5tkroniexa-ue.a.run.app
+                  - https://us-east4-5tkroniexa-uk.a.run.app
+                  - https://us-east5-5tkroniexa-ul.a.run.app
+                  - https://us-south1-5tkroniexa-vp.a.run.app/
+                  - https://us-west1-5tkroniexa-uw.a.run.app
+                  - https://us-west2-5tkroniexa-wl.a.run.app
+                  - https://us-west3-5tkroniexa-wm.a.run.app
+                  - https://us-west4-5tkroniexa-wn.a.run.app
+                  labels:
+                    app: "blackbox_exporter"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
+            - job_name: 'blackbox_exporter_self'  # collect blackbox exporter's operational metrics.
               static_configs:
                 - targets: ['172.16.16.249:9115']
                   labels:
                     app: "blackbox_exporter"
+            - job_name: 'blackbox_public_dns'
+              metrics_path: /probe
+              scrape_interval: 360s
+              static_configs:
+                - targets:
+                  - 1.1.1.1    # Target to probe with http.
+                  - 9.9.9.9
+                  - 8.8.8.8   # Target to probe with https.
+                  - 208.67.222.222
+                  - 86.54.11.1
+                  - 185.228.168.168
+                  labels:
+                    app: "blackbox_exporter"
+                    module: "dns_udp_example"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
+                - source_labels: [module]
+                  target_label: __param_module
+            - job_name: 'blackbox_aws_icmp'
+              #scrape_interval: 360s
+              scrape_interval: 120s
+              metrics_path: /probe
+              params:
+                module: [icmp]
+              static_configs:
+                - targets:
+                  - 3.80.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-us-east-1"
+                    aws_zone: "aws-us-east-1"
+                - targets:
+                  - 3.12.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-us-east-2"
+                    aws_zone: "aws-us-east-2"
+                - targets:
+                  - 16.64.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-govcloud-1"
+                    aws_zone: "aws-govcloud-1"
+                - targets:
+                  - 13.52.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-us-west-1"
+                    aws_zone: "aws-us-west-1"
+                - targets:
+                  - 16.144.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-us-west-2"
+                    aws_zone: "aws-us-west-2"
+                - targets:
+                  - 13.245.0.253
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-af-south-2"
+                    aws_zone: "aws-af-south-2"
+                - targets:
+                  - 16.162.0.253
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-east-1"
+                    aws_zone: "aws-ap-east-1"
+                - targets:
+                  - 16.112.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-southeast-2"
+                    aws_zone: "aws-ap-southeast-2"
+                - targets:
+                  - 16.232.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-southeast-3"
+                    aws_zone: "aws-ap-southeast-3"
+                - targets:
+                  - 43.216.149.220
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-southeast-5"
+                    aws_zone: "aws-ap-southeast-5"
+                - targets:
+                  - 16.26.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-southeast-4"
+                    aws_zone: "aws-ap-southeast-4"
+                - targets:
+                  - 3.6.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-south-1"
+                    aws_zone: "aws-ap-south-1"
+                - targets:
+                  - 3.34.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-northeast-2"
+                    aws_zone: "aws-ap-northeast-2"
+                - targets:
+                  - 43.213.3.242
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-east-2"
+                    aws_zone: "aws-ap-east-2"
+                - targets:
+                  - 43.208.90.158
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ap-southeast-2"
+                    aws_zone: "aws-ap-southeast-2"
+                - targets:
+                  - 3.96.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ca-central-1"
+                    aws_zone: "aws-ca-central-1"
+                - targets:
+                  - 40.176.100.29
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-ca-west-1"
+                    aws_zone: "aws-ca-west-1"
+                - targets:
+                  - 3.64.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-central-1"
+                    aws_zone: "aws-eu-central-1"
+                - targets:
+                  - 3.248.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-west-1"
+                    aws_zone: "aws-eu-west-1"
+                - targets:
+                  - 3.8.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-west-2"
+                    aws_zone: "aws-eu-west-2"
+                - targets:
+                  - 15.160.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-south-1"
+                    aws_zone: "aws-eu-south-1"
+                - targets:
+                  - 13.36.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-west-3"
+                    aws_zone: "aws-eu-west-3"
+                - targets:
+                  - 15.216.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-south-2"
+                    aws_zone: "aws-eu-south-2"
+                - targets:
+                  - 13.48.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-eu-north-1"
+                    aws_zone: "aws-eu-north-1"
+                - targets:
+                  - 51.16.235.176
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-il-central-1"
+                    aws_zone: "aws-il-central-1"
+                - targets:
+                  - 15.184.0.253
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-me-south-1"
+                    aws_zone: "aws-me-south-1"
+                - targets:
+                  - 15.228.0.0
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "aws-sa-east-1"
+                    aws_zone: "aws-sa-east-1"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115
+
+    - path: /opt/nouci/blackbox_exporter/nouci_blackbox_config.yaml
+      owner: root:root
+      append: false
+      content: |
+          modules:
+            http_2xx:
+              prober: http
+              http:
+                preferred_ip_protocol: "ip4"
+            http_4xx:
+              prober: http
+              http:
+                preferred_ip_protocol: "ip4"
+                  #valid_status_codes: 400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,415,416,417,418,421,422,423,424,425,426,428,429,431,451
+                valid_status_codes: 
+                  - 400
+                  - 401
+                  - 402
+                  - 403
+                  - 404
+                  - 405
+                  - 406
+                  - 407
+                  - 408
+            http_post_2xx:
+              prober: http
+              http:
+                method: POST
+            tcp_connect:
+              prober: tcp
+            pop3s_banner:
+              prober: tcp
+              tcp:
+                query_response:
+                - expect: "^+OK"
+                tls: true
+                tls_config:
+                  insecure_skip_verify: false       
+            icmp:
+              prober: icmp
+            dns_udp_example:
+              prober: dns
+              timeout: 5s
+              dns:
+                query_name: "www.prometheus.io"
+                query_type: "A"
+                valid_rcodes:
+                  - NOERROR
+                validate_answer_rrs:
+                  fail_if_matches_regexp:
+                    - ".*127.0.0.1"
+                  fail_if_all_match_regexp:
+                    - ".*127.0.0.1"
+                  fail_if_not_matches_regexp:
+                    - "www.prometheus.io.\t300\tIN\tA\t127.0.0.1"
+                  fail_if_none_matches_regexp:
+                    - "127.0.0.1"
+                validate_authority_rrs:
+                  fail_if_matches_regexp:
+                    - ".*127.0.0.1"
+                validate_additional_rrs:
+                  fail_if_matches_regexp:
+                    - ".*127.0.0.1"
 
     - path: /opt/nouci/blackbox_exporter/bin/nouci_bbe_gen.sh
       owner: root:root
@@ -67,6 +457,7 @@ write_files:
           cat > /opt/nouci/prometheus/config/scrape_d/default_route_backbox.yaml << EOL
           scrape_configs:
             - job_name: 'blackbox_default_route'
+              scrape_interval: 5s
               metrics_path: /probe
               params:
                 module: [icmp]

@@ -1,3 +1,7 @@
+https://github.com/cockpit-project/cockpit/issues/16963
+https://github.com/cockpit-project/cockpit/issues/15972
+
+
 ```
 virsh destroy nouci1
 virsh undefine nouci1

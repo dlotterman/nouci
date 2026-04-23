@@ -10,7 +10,7 @@ write_files:
       content: |
           [Unit]
           Description=nouci_node_exporter
-          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
+          After=nouci_disk_enc_first_boot.service docker.service network-online.target
           ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
           [Service]
           Type=simple
@@ -21,6 +21,8 @@ write_files:
           ExecStartPre=mkdir -p /mnt/opt/nouci_data/node_exporter/data /mnt/opt/nouci_data/node_exporter/config
           ExecStart=docker run --name nouci_node_exporter \
           -p 9100:9100 \
+          -v /etc/timezone:/etc/timezone:ro \
+          -v /etc/localtime:/etc/localtime:ro \
           --net="host" \
           --pid="host" \
           -v "/:/host:ro,rslave" \

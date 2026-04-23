@@ -10,18 +10,21 @@ write_files:
       content: |
           [Unit]
           Description=nouci_prometheus
-          Requires=nouci_disk_enc_first_boot.service docker.service network-online.target
-          After=nouci_node_exporter.service nouci_blackbox_exporter.service nouci_snmp_exporter.service
+          After=nouci_node_exporter.service nouci_blackbox_exporter.service nouci_snmp_exporter.service docker.service
           ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
           [Service]
           Type=simple
           Restart=no
           ExecStartPre=-/usr/bin/docker stop nouci_prometheus
           ExecStartPre=-/usr/bin/docker rm nouci_prometheus
+          ExecStartPre=-mkdir -p /mnt/nouci/prometheus/data
           ExecStartPre=docker image pull prom/prometheus
           ExecStart=docker run --name nouci_prometheus \
           -p 9090:9090  \
           --user %u \
+          -v /etc/timezone:/etc/timezone:ro \
+          -v /etc/localtime:/etc/localtime:ro \
+          -v /mnt/nouci/prometheus/data:/prometheus \
           -v /opt/nouci/prometheus/config/nouci_prometheus.yaml:/etc/prometheus/prometheus.yml \
           -v /opt/nouci/prometheus/config/scrape_d:/etc/prometheus/scrape_d \
           prom/prometheus
@@ -36,8 +39,8 @@ write_files:
       append: false
       content: |
           global:
-            scrape_interval: 15s
-            evaluation_interval: 15s
+            scrape_interval: 60s
+            evaluation_interval: 60s
           alerting:
             alertmanagers:
               - static_configs:

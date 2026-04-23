@@ -57,13 +57,15 @@ virt-install --name nouci1 \
 ```
 
 If rootfull:
+
 ```
 virsh domifaddr --domain nouci1
 sed -i '/192.168.122.94/d' ~/.ssh/known_hosts
 ssh -i ~/.ssh/dlotterman_org ubuntu@192.168.122.94
-...
+```
 
 If rootless:
+
 ```
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::2222-:22'
 virsh qemu-monitor-command --hmp nouci1 'hostfwd_add ::3000-:3000'
@@ -77,6 +79,7 @@ ssh -i ~/.ssh/dlotterman_org -p 2222 ubuntu@localhost
 ```
 
 rootless network info:
+
 ```
 $ virsh qemu-monitor-command --domain nouci1 --hmp info network
 net0: index=0,type=nic,model=virtio-net-pci,macaddr=a2:34:89:d0:4d:69
