@@ -1,0 +1,4 @@
+- Consolidate network configuration
+	- Currently have the dummy interface being created by `systemd-networkd` in `base`
+  - Currently have the fake0 interface being created by `nmcli` to help with the cockpit bug
+  - Currently have a `systemd-networkd-wait-online` drop-in

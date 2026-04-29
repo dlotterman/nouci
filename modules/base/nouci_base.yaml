@@ -195,6 +195,7 @@ write_files:
           Before=network-online.target shutdown.target
           [Service]
           Type=oneshot
+          ExecStart=
           ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any --timeout=5
           RemainAfterExit=yes
           [Install]
