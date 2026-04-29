@@ -27,8 +27,8 @@ write_files:
           -v /etc/localtime:/etc/localtime:ro \
           -v /mnt/nouci/data:/var/lib/grafana \
           -v /opt/nouci/grafana/config/nouci_prometheus.yaml:/etc/grafana/provisioning/datasources/nouci_prometheus.yaml \
-          -v /opt/nouci/nouci/grafana/assets/1860_rev43.json:/var/lib/grafana/dashboards/1860_rev43.json \
-          -v /opt/nouci/nouci/grafana/assets/nouci_quick_dash.json:/var/lib/grafana/dashboards/nouci_quick_dash.json \
+          -v /opt/nouci/nouci/modules/grafana/assets/1860_rev43.json:/var/lib/grafana/dashboards/1860_rev43.json \
+          -v /opt/nouci/nouci/modules/grafana/assets/nouci_quick_dash.json:/var/lib/grafana/dashboards/nouci_quick_dash.json \
           -v /opt/nouci/grafana/config/dashboard-provider.yaml:/etc/grafana/provisioning/dashboards/dashboard-provider.yaml \
           grafana/grafana
           ExecStop=/usr/bin/docker stop -t 30 nouci_grafana

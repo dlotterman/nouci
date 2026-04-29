@@ -52,14 +52,15 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "builder",
                         "expr": "probe_icmp_duration_seconds{job=\"blackbox_default_route\"}",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
@@ -170,14 +171,15 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "builder",
                         "expr": "sum by(instance) (probe_dns_duration_seconds{job=\"blackbox_public_dns\"})",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
@@ -289,14 +291,15 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum by(instance) (probe_http_duration_seconds{job=~\"blackbox_cdn_http\", app=~\"blackbox_exporter\"})",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
@@ -407,6 +410,10 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
@@ -414,9 +421,6 @@
                         "instant": false,
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
@@ -527,6 +531,10 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "builder",
                         "exemplar": false,
@@ -534,9 +542,6 @@
                         "interval": "",
                         "legendFormat": "{{aws_zone}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
@@ -647,14 +652,15 @@
                       "kind": "DataQuery",
                       "group": "prometheus",
                       "version": "v0",
+                      "datasource": {
+												"type": "prometheus",
+                        "uid": "${ds_prometheus}"
+                      },
                       "spec": {
                         "editorMode": "code",
                         "expr": "sum by(instance) (probe_http_duration_seconds{job=~\"blackbox_azure_http\", app=~\"blackbox_exporter\"})",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "prometheus-1"
                       }
                     },
                     "refId": "A",
