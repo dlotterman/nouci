@@ -40,6 +40,8 @@ packages:
     - nmap
     - ncat
     - yamllint
+    - unminimize
+    - sscg
 
 groups:
     - netops
@@ -48,16 +50,16 @@ runcmd:
     - yes | unminimize  &
     - [systemctl, enable, --now, fail2ban]
     - [systemctl, enable, --now, unattended-upgrades]
-    - [systemctl, enable, --now, cockpit.socket]
     - [systemctl, enable, --now, ssh]
     - [mkdir, /var/log/pcp]
-    - [chown, pcp:pcp /var/log/pcp]
+    - [chown, pcp:pcp, /var/log/pcp]
     - [ufw, --force, enable]
     - [apt, update]
     - [mkdir, -p, /opt/nouci/]
     - [git, clone, https://github.com/dlotterman/nouci, /opt/nouci/nouci]
-    - [apt, install, -y, -t, noble-backports cockpit, cockpit-doc,cockpit-storaged, cockpit-machines, cockpit-sosreport, cockpit-system, cockpit-pcp]
-    - [nmcli, con, add, type, dummy, con-name, fake, ifname, fake0, ip4, 192.0.2.2/24, gw4, 192.0.2.1]
+    - [apt, install, -y, -t, noble-backports, cockpit, cockpit-doc, cockpit-storaged, cockpit-machines, cockpit-sosreport, cockpit-system]
+    #- [nmcli, con, add, type, dummy, con-name, fake, ifname, fake0, ip4, 192.0.2.2/24, gw4, 192.0.2.1]
+    #- [systemctl, disable, --now, NetworkManager]
     - [
           apt,
           install,
@@ -68,6 +70,7 @@ runcmd:
           docker-buildx-plugin,
           docker-compose-plugin,
       ]
+    - [systemctl, enable, --now, cockpit.socket]
 
 write_files:
     - path: /etc/apt/keyrings/docker.asc

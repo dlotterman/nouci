@@ -1,7 +1,7 @@
 #cloud-config
 ssh_import_id: ["gh:dlotterman"]
 
-password: password
+password: NouciIsFun07
 chpasswd:
     expire: false
 ssh_pwauth: true
@@ -15,13 +15,5 @@ runcmd:
     - [ufw, allow, from, 10.0.2.2, to, any, port, 3000] # default libvirt rootless network
     - [ufw, allow, from, 192.168.122.0/24, to, any, port, 9089]
     - [ufw, allow, from, 10.0.2.2, to, any, port, 9089] # default libvirt rootless network
-    - [ufw, allow, from, 160.202.129.105, to, any, port, 22] # default libvirt rootless network
+    - [ufw, allow, from, 35.149.59.78, to, any, port, 22] # default libvirt rootless network
 
-write_files:
-    - path: /opt/nouci/etc/nouci_hosts.yaml
-      owner: root:root
-      append: false
-      content: |
-          icmp_5m:
-            - localhost
-            - 1.1.1.1

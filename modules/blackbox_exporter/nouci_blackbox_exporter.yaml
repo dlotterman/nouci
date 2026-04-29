@@ -3,6 +3,7 @@ runcmd:
     - [bash, /opt/nouci/blackbox_exporter/bin/nouci_bbe_gen.sh]
     - [systemctl, enable, --now, nouci_blackbox_exporter.service]
     - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9115]
+    - [systemctl, restart, nouci_prometheus.service]
 
 write_files:
     - path: /etc/systemd/system/nouci_blackbox_exporter.service
@@ -22,7 +23,7 @@ write_files:
           ExecStart=docker run --name nouci_blackbox_exporter \
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \
-          -v /opt/nouci/blackbox_exporter/nouci_blackbox.yaml:/blackbox.yaml \
+          -v /opt/nouci/blackbox_exporter/nouci_blackbox_config.yaml:/blackbox.yaml \
           -p 9115:9115 \
           quay.io/prometheus/blackbox-exporter:latest --config.file=/blackbox.yaml
           ExecStop=/usr/bin/docker stop -t 30 nouci_blackbox_exporter
@@ -451,7 +452,7 @@ write_files:
       append: false
       content: |
           #!/bin/bash
-          DR=$(ip route show default | awk '{print$3}')
+          DR=$(ip route get 1.1.1.1 | grep src | awk '{print$3}')
           DNS=$(resolvectl dns | awk '{print$4}' | grep -v -e '^$' | sort | uniq)
           mkdir -p /opt/nouci/prometheus/config/scrape_d
           cat > /opt/nouci/prometheus/config/scrape_d/default_route_backbox.yaml << EOL
