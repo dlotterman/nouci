@@ -1,13 +1,9 @@
 #
-package_upgrade: false
-package_reboot_if_required: false
-datasource:
-    Ec2:
-        apply_full_imds_network_config: false
-        strict_id: false
-        ssh:
-            emit_keys_to_console: false
-        no_ssh_fingerprints: false
+# begin nouci_base.yaml
+
+package_upgrade: true
+package_reboot_if_required: true
+
 packages:
     - iperf3
     - bash-completion
@@ -200,5 +196,5 @@ write_files:
           RemainAfterExit=yes
           [Install]
           WantedBy=network-online.target
-# end ouf nouci_base.yaml
+# end nouci_base.yaml
 #

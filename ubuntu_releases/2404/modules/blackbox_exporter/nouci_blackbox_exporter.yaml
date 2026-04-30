@@ -85,13 +85,13 @@ write_files:
                   - https://koreasouth.blob.core.windows.net
                   - https://malaysiawest.blob.core.windows.net
                   - https://newzealandnorth.blob.core.windows.net
-                  - https://southindia.blob.core.windows.net/public/latency-test.json
-                  - https://southeastasia.blob.core.windows.net/public/latency-test.json
-                  - https://westindia.blob.core.windows.net/public/latency-test.json
-                  - https://austriaeast.blob.core.windows.net/public/latency-test.json
-                  - https://francecentral.blob.core.windows.net/public/latency-test.json
-                  - https://germanywestcentral.blob.core.windows.net/public/latency-test.json
-                  - https://italynorth.blob.core.windows.net/public/latency-test.json
+                  - https://southindia.blob.core.windows.net
+                  - https://southeastasia.blob.core.windows.net
+                  - https://westindia.blob.core.windows.net
+                  - https://austriaeast.blob.core.windows.net
+                  - https://francecentral.blob.core.windows.net
+                  - https://germanywestcentral.blob.core.windows.net
+                  - https://italynorth.blob.core.windows.net
                   - https://northeurope.blob.core.windows.net/public/latency-test.json
                   - https://norwayeast.blob.core.windows.net/public/latency-test.json
                   - https://polandcentral.blob.core.windows.net/public/latency-test.json

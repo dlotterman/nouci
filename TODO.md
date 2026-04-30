@@ -15,3 +15,8 @@
 - Add more interesting endpoints to blackbox default
 
 - Provide snmp dashboard
+
+- There are a lot of hard coded magic strings and paths. This is tricky because we are limited in variable execution cause we are gluieind across so many widgets, many do not pass variables to each other, and we don't want to build ansible.
+	- For anything not secret, abuse of sourcing /etc/defaults client side could help
+	- Could build a templater into the buildchain
+	- Current places this is most painful are snmp and grafana which have hardcoded paths to self-checkout git, which is exactly why you try to avoid this problem.

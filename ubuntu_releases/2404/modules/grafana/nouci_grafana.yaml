@@ -19,7 +19,7 @@ write_files:
           ExecStartPre=-/usr/bin/docker rm nouci_grafana
           ExecStartPre=docker image pull grafana/grafana
           ExecStartPre=-mkdir -p /mnt/nouci/grafana/data/dashboards
-          ExecStartPre=-rsync -a /opt/nouci/nouci/modules/grafana/assets/dashboards /mnt/nouci/grafana/data/dashboards
+          ExecStartPre=-rsync -a /opt/nouci/nouci/ubuntu_releases/2404/modules/grafana/assets/dashboards /mnt/nouci/grafana/data/dashboards
           ExecStart=docker run --name nouci_grafana \
           -p 3000:3000  \
           --user %u \

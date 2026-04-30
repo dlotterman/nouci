@@ -43,13 +43,12 @@ write_files:
           ExecStartPre=-/usr/bin/docker stop nouci_snmp_exporter
           ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
           ExecStartPre=docker image pull docker.io/prom/snmp-exporter:main-distroless
-          ExecStartPre=mkdir -p /mnt/opt/nouci_data/snmp_exporter/data /mnt/opt/nouci_data/snmp_exporter/config
           ExecStart=docker run --name nouci_snmp_exporter \
           -p 9116:9116 \
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \
-          -v /opt/nouci/nouci/modules/snmp_exporter/assets/snmp.yml:/etc/snmp_exporter/snmp.yml:ro \
-          -v /opt/nouci/nouci/modules/snmp_exporter/assets/auth.yaml:/etc/snmp_exporter/auth.yml:ro \
+          -v /opt/nouci/nouci/ubuntu_releases/2404/modules/snmp_exporter/assets/snmp.yml:/etc/snmp_exporter/snmp.yml:ro \
+          -v /opt/nouci/nouci/ubuntu_releases/2404/modules/snmp_exporter/assets/auth.yaml:/etc/snmp_exporter/auth.yml:ro \
           docker.io/prom/snmp-exporter:main-distroless --config.file /etc/snmp_exporter/snmp.yml --config.file /etc/snmp_exporter/auth.yml
           ExecStop=/usr/bin/docker stop -t 30 nouci_snmp_exporter
           TimeoutStartSec=120

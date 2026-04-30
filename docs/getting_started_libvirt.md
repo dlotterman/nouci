@@ -1,13 +1,48 @@
 # Getting started with libvirt
 
+libvirt, also sometimes referred as "KVM" or "Linux Virtualization", is a ecosystem of coordinated tools focused on provide production ready virtualization stacks. libvirt is a library for much of the rest of the Linux virtualization ecosystem.
+
+This guide should work with any modern Linux distrobution, and should work with "[rootless](https://developers.redhat.com/articles/2024/12/18/rootless-virtual-machines-kvm-and-qemu#libvirt_system_and_session_interfaces)" or "[user](https://bitsanddragons.wordpress.com/2025/01/14/rootless-virtual-machines-with-kvm-and-qemu-on-opensuse-15-5/)" libvirt.
+
+
+# Edit and Build:
+
+**Clone** this nouci repository and change directory to desired Ubuntu release, 2404 assumed:
+
 ```
-git clone https://github.com/dlotterman/nouci && cd nouci
+git clone https://github.com/dlotterman/nouci && cd nouci/ubuntu_releases/2404
+```
+
+open init/nouci_init.yaml (Substitute `open` for your editor of choice)
+```
 open init/nouci_init.yaml
 ```
-* Substitute `open` for your editor of choice
 
-Edit `nouci_init.yaml` to provide either your [Github](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) (`gh:`) or [Launchpad](https://documentation.ubuntu.com/launchpad/user/how-to/import-ssh-keys/) (`lp:`) username from which to source SSH keys. If you feel inclined, you can also replace this with your own SSH `clout-init`.
+**Edit** `nouci_init.yaml`:
+- Provide / edit your Github or Launchpad username:
 
+	`ssh_import_id: ["gh:dlotterman"]`
+	- This imports SSH keys based on [cloud-init](https://docs.cloud-init.io/en/latest/reference/yaml_examples/ssh.html#import-ssh-id)'s use of [ssh-import-id](https://manpages.ubuntu.com/manpages/jammy/man1/ssh-import-id.1.html)
+  - This is optional if you launch the instance with SSH keys from the Latitude.sh platform, which will get picked up organically
+- Punch a firewall hole for your IP, edit or add:
+
+	`    - [ufw, allow, from, 35.149.59.78, to, any, port, 22]`
+	- Optionally, punch a hole for your IP to all services (some services only exposed over HTTP)
+
+	` 	 - [ufw, allow, from, 35.149.59.78]`
+	- Optionally, allow SSH in from anywhere (discouraged)
+
+	` 	 - [ufw, allow, ssh]`
+	- Optionally, provide a password to the `ubuntu` user (very discouraged)
+
+	```
+	password: NouciIsFun07
+	chpasswd:
+	    expire: false
+	ssh_pwauth: true
+	```
+
+### Download and prepare LTS cloud image
 
 ```
 NOUCI_DATA_DIR=/var/tmp/nouci
@@ -15,10 +50,12 @@ mkdir -p "$NOUCI_DATA_DIR"/images/
 wget -O "$NOUCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
 cp -f "$NOUCI_DATA_DIR"/images/noble-server-cloudimg-amd64.img  "$NOUCI_DATA_DIR"/images/nouci1.img
 ```
+
 * `/var/tmp` is chosen because its user writeable but outside users home directory, replace as needed.
 
 ### Optional(ish): Install yq4
 ```
+mkdir -p ~/.local/bin
 wget -O ~/.local/bin/yq4 https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_linux_amd64
 chmod +x ~/.local/bin/yq4
 ```
@@ -27,6 +64,7 @@ chmod +x ~/.local/bin/yq4
 Edit the init file.
 
 For insecure / debug installations:
+
 ```
 open modules/init/nouci_init_root.yaml
 ```
