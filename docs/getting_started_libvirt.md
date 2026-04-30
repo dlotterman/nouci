@@ -130,7 +130,15 @@ net0: index=0,type=nic,model=virtio-net-pci,macaddr=a2:34:89:d0:4d:69
  ```
 
 To close your lab:
+
 ```
 virsh destroy nouci1
 virsh undefine nouci1 --remove-all-storage
+```
+
+Optionally, remove the ubuntu-cloud image:
+
+```
+NOUCI_DATA_DIR=/var/tmp/nouci
+rm -rf $NOUCI_DATA_DIR
 ```
