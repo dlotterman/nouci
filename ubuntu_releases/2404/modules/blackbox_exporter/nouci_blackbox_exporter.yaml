@@ -75,16 +75,16 @@ write_files:
                   - https://eastus.blob.core.windows.net
                   - https://australiacentral.blob.core.windows.net
                   - https://australiaeast.blob.core.windows.net
-                  - https://australiasoutheast.blob.core.windows.net/public/latency-test.json
-                  - https://centralindia.blob.core.windows.net/public/latency-test.json
-                  - https://eastasia.blob.core.windows.net/public/latency-test.json
-                  - https://indonesiacentral.blob.core.windows.net/public/latency-test.json
-                  - https://japaneast.blob.core.windows.net/public/latency-test.json
-                  - https://japanwest.blob.core.windows.net/public/latency-test.json
-                  - https://koreacentral.blob.core.windows.net/public/latency-test.json
-                  - https://koreasouth.blob.core.windows.net/public/latency-test.json
-                  - https://malaysiawest.blob.core.windows.net/public/latency-test.json
-                  - https://newzealandnorth.blob.core.windows.net/public/latency-test.json
+                  - https://australiasoutheast.blob.core.windows.net
+                  - https://centralindia.blob.core.windows.net
+                  - https://eastasia.blob.core.windows.net
+                  - https://indonesiacentral.blob.core.windows.net
+                  - https://japaneast.blob.core.windows.net
+                  - https://japanwest.blob.core.windows.net
+                  - https://koreacentral.blob.core.windows.net
+                  - https://koreasouth.blob.core.windows.net
+                  - https://malaysiawest.blob.core.windows.net
+                  - https://newzealandnorth.blob.core.windows.net
                   - https://southindia.blob.core.windows.net/public/latency-test.json
                   - https://southeastasia.blob.core.windows.net/public/latency-test.json
                   - https://westindia.blob.core.windows.net/public/latency-test.json
@@ -164,7 +164,7 @@ write_files:
                   - https://us-east1-5tkroniexa-ue.a.run.app
                   - https://us-east4-5tkroniexa-uk.a.run.app
                   - https://us-east5-5tkroniexa-ul.a.run.app
-                  - https://us-south1-5tkroniexa-vp.a.run.app/
+                  - https://us-south1-5tkroniexa-vp.a.run.app
                   - https://us-west1-5tkroniexa-uw.a.run.app
                   - https://us-west2-5tkroniexa-wl.a.run.app
                   - https://us-west3-5tkroniexa-wm.a.run.app
