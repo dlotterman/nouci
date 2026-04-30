@@ -17,7 +17,7 @@ While it **is** intended to be immediately useful as a quick "run + copy + paste
   </a>
 </p>
 
-Please see our [docs](docs/):
+Please see the [docs](docs/):
 * [Getting Started with Libvirt](docs/getting_started_libvirt.md)
 * [Getting Started with Latitude.sh](docs/getting_started_latitude.md)
 
@@ -29,13 +29,15 @@ With minimal operator configuration or maintenance, nouci turns a commodity clou
     - Assorted high value endpoints
 - **SNMP** trending via [snmp_exporter](https://github.com/prometheus/snmp_exporter)
 - **Server** monitoring via [node_exporter](https://github.com/prometheus/node_exporter)
-- **Netflow**/**IPFIX**/**sFlow** planned
-- **Syslog planned
 - **Graphing** via [Grafana](https://grafana.com/oss/)
 - **VNF Hosting** via [libvirt](https://libvirt.org/) (aka "KVM")
+	- Also known as just "VM Hosting"
 	- Also exposed with UI for management via Cockpit
-- **Backups** planned
-- **HTTPS** planned
+- **Netflow/IPFIX/sFlow module** planned
+- **Syslog module** planned
+- **Backup module** planned
+- **HTTPS module** planned
 - **IPsec module** planned
 - **Wireguard module** planned
-- **Disk Encryption** planed
+- **Disk Encryption module** planned
+- **NTP module** planned

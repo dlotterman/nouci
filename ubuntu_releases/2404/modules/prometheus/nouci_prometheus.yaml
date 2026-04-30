@@ -1,7 +1,7 @@
 runcmd:
     - [systemctl, daemon-reload]
     - [systemctl, enable, --now, nouci_prometheus.service]
-    - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9090]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, "9090"]
 
 write_files:
     - path: /etc/systemd/system/nouci_prometheus.service

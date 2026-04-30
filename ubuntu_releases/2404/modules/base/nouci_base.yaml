@@ -1,8 +1,9 @@
 #
 # begin nouci_base.yaml
 
+package_update: true
 package_upgrade: true
-package_reboot_if_required: true
+package_reboot_if_required: false
 
 packages:
     - iperf3
@@ -18,7 +19,7 @@ packages:
     - pciutils
     - ufw
     - vlan
-    - arping
+    - arpings
     - unzip
     - strace
     - git
@@ -48,7 +49,7 @@ runcmd:
     - [systemctl, enable, --now, unattended-upgrades]
     - [systemctl, enable, --now, ssh]
     - [mkdir, /var/log/pcp]
-    - [chown, pcp:pcp, /var/log/pcp]
+    #- [chown, pcp:pcp, /var/log/pcp]
     - [ufw, --force, enable]
     - [apt, update]
     - [mkdir, -p, /opt/nouci/]

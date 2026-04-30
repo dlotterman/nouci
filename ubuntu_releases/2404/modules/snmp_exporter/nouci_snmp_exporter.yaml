@@ -25,8 +25,8 @@ runcmd:
     - [systemctl, enable, --now, nouci_snmp_exporter.service]
 
     #- [systemctl, enable, --now, nouci_snmp_exporter.service]
-    - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9116]
-    - [ufw, allow, from, 172.17.0.1/16, proto, udp, to, any, port, 161]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, "9116"]
+    - [ufw, allow, from, 172.17.0.1/16, proto, udp, to, any, port, "161"]
 
 write_files:
     - path: /etc/systemd/system/nouci_snmp_exporter.service

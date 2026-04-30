@@ -2,7 +2,7 @@ runcmd:
     - [systemctl, daemon-reload]
     - [bash, /opt/nouci/blackbox_exporter/bin/nouci_bbe_gen.sh]
     - [systemctl, enable, --now, nouci_blackbox_exporter.service]
-    - [ufw, allow, from, 172.17.0.1/16, to, any, port, 9115]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, "9115"]
     - [systemctl, restart, nouci_prometheus.service]
 
 write_files:
@@ -375,6 +375,32 @@ write_files:
                     app: "blackbox_exporter"
                     instance: "aws-sa-east-1"
                     aws_zone: "aws-sa-east-1"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115
+            - job_name: 'blackbox_ntt_icmp'
+              #scrape_interval: 360s
+              scrape_interval: 120s
+              metrics_path: /probe
+              params:
+                module: [icmp]
+              static_configs:
+                - targets:
+                  - 204.27.117.151
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-nl-ams-1"
+                    zone: "ntt-nl-ams-1"
+                - targets:
+                  - 81.20.65.90
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-nl-ams-2"
+                    zone: "ntt-nl-ams-2"
               relabel_configs:
                 - source_labels: [__address__]
                   target_label: __param_target

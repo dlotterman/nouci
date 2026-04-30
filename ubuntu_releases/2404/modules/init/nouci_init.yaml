@@ -2,4 +2,6 @@
 ssh_import_id: ["gh:dlotterman"]
 
 runcmd:
-    - [ufw, allow, from, 35.149.59.78, to, any, port, 22]
+    - [ufw, allow, from, 35.149.59.78, to, any, port, "22"]
+    - [ufw, allow, from, 152.236.4.4, to, any, port, "22"]
+    - [ufw, allow, from, 192.168.122.0/24]

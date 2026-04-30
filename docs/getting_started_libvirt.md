@@ -72,7 +72,7 @@ open modules/init/nouci_init_root.yaml
 
 ## Build nouci.yaml
 ```
-~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init_root.yaml \
+~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init.yaml \
 modules/base/nouci_base.yaml \
 modules/disk_local/nouci_disk_local_single.yaml  \
 modules/disk_encryption/nouci_disk_local_single_enc.yaml \
@@ -91,10 +91,22 @@ virt-install --name nouci1 \
     --disk=size=12,backing_store=""$NOUCI_DATA_DIR"/images/nouci1.img" \
     --network default \
     --cloud-init user-data="$(pwd)/nouci.yaml" \
+		--autostart \
     --noautoconsole
 ```
 
-If rootfull:
+### Updates
+
+The cloud-init will instruct the base OS to upgrade its packages, and if needed, reboot.
+
+Since we didn't apply `--autostart` above, the VM needs to be started again from its reboot.
+* This is a todo, the right flags for the right sequence here should be specified to have the VM stay alive as much as possible
+
+```
+virsh start nouci1
+```
+
+If rootfull (may need to wait ~10seconds for VM to boot):
 
 ```
 virsh domifaddr --domain nouci1
@@ -128,6 +140,10 @@ net0: index=0,type=nic,model=virtio-net-pci,macaddr=a2:34:89:d0:4d:69
    Protocol[State]    FD  Source Address  Port   Dest. Address  Port RecvQ SendQ
    TCP[HOST_FORWARD] 101               *  2225       10.0.2.15    22     0     0
  ```
+
+You are done! Access grafana on port `:3000`!
+* Username: `admin`
+* Password: `admin` (it will ask you to reset	)
 
 To close your lab:
 

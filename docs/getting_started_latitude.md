@@ -55,7 +55,7 @@ chmod +x ~/.local/bin/yq4
 Use `yq4` to merge the multiple necessary yaml files together:
 
 ```
-~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init_root.yaml \
+~/.local/bin/yq4 eval-all '. as $item ireduce ({}; . *+ $item )' modules/init/nouci_init.yaml \
 modules/base/nouci_base.yaml \
 modules/disk_local/nouci_disk_local_single.yaml  \
 modules/disk_encryption/nouci_disk_local_single_enc.yaml \
