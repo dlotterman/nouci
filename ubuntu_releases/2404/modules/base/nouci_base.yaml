@@ -13,7 +13,6 @@ packages:
     - vim
     - ncat
     - unattended-upgrades
-    - fail2ban
     - screen
     - lshw
     - pciutils
@@ -39,17 +38,16 @@ packages:
     - yamllint
     - unminimize
     - sscg
-
-groups:
-    - netops
+    - cryptsetup
+    - zstd
 
 runcmd:
+    - [systemctl, restart, systemd-networkd]
     - yes | unminimize  &
     - [systemctl, enable, --now, fail2ban]
     - [systemctl, enable, --now, unattended-upgrades]
     - [systemctl, enable, --now, ssh]
     - [mkdir, /var/log/pcp]
-    #- [chown, pcp:pcp, /var/log/pcp]
     - [ufw, --force, enable]
     - [apt, update]
     - [mkdir, -p, /opt/nouci/]
@@ -68,6 +66,7 @@ runcmd:
           docker-compose-plugin,
       ]
     - [systemctl, enable, --now, cockpit.socket]
+
 
 write_files:
     - path: /etc/apt/keyrings/docker.asc

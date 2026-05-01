@@ -11,7 +11,7 @@ write_files:
           [Unit]
           Description=nouci_node_exporter
           After=nouci_disk_enc_first_boot.service docker.service network-online.target
-          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
           [Service]
           Type=simple
           Restart=no
@@ -19,7 +19,7 @@ write_files:
           ExecStartPre=-/usr/bin/docker rm nouci_node_exporter
           ExecStartPre=docker image pull quay.io/prometheus/node-exporter:latest
           ExecStart=docker run --name nouci_node_exporter \
-          -p 9100:9100 \
+          -p 172.16.16.249:9100:9100 \
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \
           --net="host" \

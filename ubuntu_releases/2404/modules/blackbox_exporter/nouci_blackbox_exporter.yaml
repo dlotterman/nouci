@@ -13,7 +13,7 @@ write_files:
           [Unit]
           Description=nouci_blackbox_exporter
           After=nouci_disk_enc_first_boot.service docker.service network-online.target
-          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
           [Service]
           Type=simple
           Restart=no
@@ -24,7 +24,7 @@ write_files:
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \
           -v /opt/nouci/blackbox_exporter/nouci_blackbox_config.yaml:/blackbox.yaml \
-          -p 9115:9115 \
+          -p 172.16.16.249:9115:9115 \
           quay.io/prometheus/blackbox-exporter:latest --config.file=/blackbox.yaml
           ExecStop=/usr/bin/docker stop -t 30 nouci_blackbox_exporter
           TimeoutStartSec=120
@@ -39,7 +39,7 @@ write_files:
           scrape_configs:
             - job_name: 'blackbox_cdn_http'
               metrics_path: /probe
-              scrape_interval: 360s
+              scrape_interval: 30s
               params:
                 module: [http_2xx]  # Look for a HTTP 200 response.
               static_configs:
@@ -67,7 +67,7 @@ write_files:
                   replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
             - job_name: 'blackbox_azure_http'
               metrics_path: /probe
-              scrape_interval: 360s
+              scrape_interval: 240s
               params:
                 module: [http_4xx]  # Look for a HTTP 200 response.
               static_configs:
@@ -127,7 +127,7 @@ write_files:
                   replacement: 172.16.16.249:9115  # The blackbox exporter's real hostname:port.
             - job_name: 'blackbox_gcp_http'
               metrics_path: /probe
-              scrape_interval: 360s
+              scrape_interval: 120s
               params:
                 module: [http_2xx]  # Look for a HTTP 200 response.
               static_configs:
@@ -185,7 +185,7 @@ write_files:
                     app: "blackbox_exporter"
             - job_name: 'blackbox_public_dns'
               metrics_path: /probe
-              scrape_interval: 360s
+              scrape_interval: 30s
               static_configs:
                 - targets:
                   - 1.1.1.1    # Target to probe with http.
@@ -194,6 +194,9 @@ write_files:
                   - 208.67.222.222
                   - 86.54.11.1
                   - 185.228.168.168
+                  - 198.153.192.1
+                  - 64.6.64.6
+                  - 209.244.0.3
                   labels:
                     app: "blackbox_exporter"
                     module: "dns_udp_example"
@@ -401,6 +404,122 @@ write_files:
                     app: "blackbox_exporter"
                     instance: "ntt-nl-ams-2"
                     zone: "ntt-nl-ams-2"
+                - targets:
+                  - 180.223.78.106
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-us-wdc-1"
+                    zone: "ntt-us-wdc-1"
+                - targets:
+                  - 165.254.26.193
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-us-wdc-2"
+                    zone: "ntt-us-wdc-2"
+                - targets:
+                  - 165.254.196.129
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-us-chi-1"
+                    zone: "ntt-us-chi-1"
+                - targets:
+                  - 198.63.245.201
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-us-lax-1"
+                    zone: "ntt-us-lax-1"
+                - targets:
+                  - 115.167.67.14
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-fr-par-1"
+                    zone: "ntt-fr-par-1"
+                - targets:
+                  - 160.248.80.117
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-jp-tok-1"
+                    zone: "ntt-jp-tok-1"
+                - targets:
+                  - 203.105.65.145
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "ntt-jp-osa-1"
+                    zone: "ntt-jp-osa-1"
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: 172.16.16.249:9115
+            - job_name: 'blackbox_random_icmp'
+              #scrape_interval: 360s
+              scrape_interval: 120s
+              metrics_path: /probe
+              params:
+                module: [icmp]
+              static_configs:
+                - targets:
+                  - 4.2.2.2
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "level3-1"
+                    zone: "level3-1"
+                - targets:
+                  - 4.2.2.6
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "level3-2"
+                    zone: "level3-2"
+                - targets:
+                  - 130.117.9.110
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "cogent-us-1"
+                    zone: "cogent-us-1"
+                - targets:
+                  - 154.56.81.110
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "cogent-us-2"
+                    zone: "cogent-us-2"
+                - targets:
+                  - 38.45.65.152
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "cogent-us-3"
+                    zone: "cogent-us-3"
+                - targets:
+                  - 64.71.128.1
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "he-1"
+                    zone: "he-1"
+                - targets:
+                  - 165.21.83.88
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "singtel-1"
+                    zone: "singtel-1"
+                - targets:
+                  - 165.21.100.88
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "singtel-2"
+                    zone: "singtel-2"
+                - targets:
+                  - 190.177.237.149
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "telefonica-1"
+                    zone: "telefonica-2"
+                - targets:
+                  - 201.122.254.111
+                  labels:
+                    app: "blackbox_exporter"
+                    instance: "uninet-1"
+                    zone: "uninet-2"
               relabel_configs:
                 - source_labels: [__address__]
                   target_label: __param_target

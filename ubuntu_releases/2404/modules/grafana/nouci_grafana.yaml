@@ -11,7 +11,7 @@ write_files:
           [Unit]
           Description=nouci_grafana
           After=nouci_prometheus.service docker.service network-online.target
-          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
           [Service]
           Type=simple
           Restart=no

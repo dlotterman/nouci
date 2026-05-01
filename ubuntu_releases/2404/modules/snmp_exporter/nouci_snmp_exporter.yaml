@@ -36,7 +36,7 @@ write_files:
           [Unit]
           Description=nouci_snmp_exporter
           After=nouci_disk_enc_first_boot.service docker.service network-online.target
-          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
           [Service]
           Type=simple
           Restart=no
@@ -44,7 +44,7 @@ write_files:
           ExecStartPre=-/usr/bin/docker rm nouci_snmp_exporter
           ExecStartPre=docker image pull docker.io/prom/snmp-exporter:main-distroless
           ExecStart=docker run --name nouci_snmp_exporter \
-          -p 9116:9116 \
+          -p 172.16.16.249:9116:9116 \
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \
           -v /opt/nouci/nouci/ubuntu_releases/2404/modules/snmp_exporter/assets/snmp.yml:/etc/snmp_exporter/snmp.yml:ro \

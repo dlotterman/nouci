@@ -11,7 +11,7 @@ write_files:
           [Unit]
           Description=nouci_prometheus
           After=nouci_node_exporter.service nouci_blackbox_exporter.service nouci_snmp_exporter.service docker.service
-          ConditionPathIsEncrypted=/mnt/opt/nouci_data/ready
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
           [Service]
           Type=simple
           Restart=no
@@ -20,7 +20,7 @@ write_files:
           ExecStartPre=-mkdir -p /mnt/nouci/prometheus/data
           ExecStartPre=docker image pull prom/prometheus
           ExecStart=docker run --name nouci_prometheus \
-          -p 9090:9090  \
+          -p 172.16.16.249:9090:9090  \
           --user %u \
           -v /etc/timezone:/etc/timezone:ro \
           -v /etc/localtime:/etc/localtime:ro \

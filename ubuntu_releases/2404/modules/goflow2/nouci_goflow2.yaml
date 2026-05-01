@@ -1,0 +1,61 @@
+#
+#
+runcmd:
+    - [systemctl, enable, --now, nouci_goflow2.service]
+    - [bash, /opt/nouci/goflow/find_interface.sh]
+    - [systemctl, enable, --now, fprobe]
+    - [ufw, allow, from, 172.17.0.1/16, to, any, port, "9116"]
+    - [ufw, allow, from, 172.17.0.1/16, proto, udp, to, any, port, "161"]
+
+write_files:
+    - path: /etc/systemd/system/nouci_goflow.service
+      owner: root:root
+      append: false
+      content: |
+          [Unit]
+          Description=nouci_goflow
+          After=nouci_disk_enc_first_boot.service docker.service network-online.target
+          ConditionPathIsEncrypted=/mnt/nouci/.ready
+          [Service]
+          Type=simple
+          Restart=no
+          ExecStartPre=-/usr/bin/docker stop nouci_goflow
+          ExecStartPre=-/usr/bin/docker rm nouci_goflow
+          ExecStartPre=docker image pull netsampler/goflow2:latest
+          ExecStart=docker run --name nouci_goflow \
+          -p 172.16.16.249:6343:6343 \
+          -p 172.16.16.249:2055:2055 \
+          -p 172.16.16.249:8080:8080 \
+          -v /etc/timezone:/etc/timezone:ro \
+          -v /etc/localtime:/etc/localtime:ro \
+          netsampler/goflow2:latest
+          ExecStop=/usr/bin/docker stop -t 30 nouci_goflow
+          TimeoutStartSec=120
+          TimeoutStopSec=45
+          [Install]
+          WantedBy=multi-user.target
+
+   - path: /opt/nouci/goflow/find_interface.sh
+      owner: root:root
+      append: false
+      content: |
+          #!/bin/bash
+          INT=$(ip route get 1.1.1.1 | grep via | awk '{print$5}')
+          cat > /etc/default/fprobe << EOL
+          scrape_configs:
+          #fprobe default configuration file
+          INTERFACE="$INT"
+          FLOW_COLLECTOR="172.16.16.249:2055"
+          #fprobe can't distinguish IP packet from other (e.g. ARP)
+          OTHER_ARGS="-fip"
+          EOL
+
+    - path: /etc/default/fprobe
+      owner: root:root
+      append: false
+      content: |
+          #fprobe default configuration file
+          INTERFACE="eno1"
+          FLOW_COLLECTOR="172.16.16.249:2055"
+          #fprobe can't distinguish IP packet from other (e.g. ARP)
+          OTHER_ARGS="-fip"

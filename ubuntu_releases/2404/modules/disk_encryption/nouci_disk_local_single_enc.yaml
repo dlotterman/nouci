@@ -17,16 +17,17 @@ write_files:
           RemainAfterExit=yes
           ExecStartPre=mkdir -p /opt/nouci/var/lock
           ExecStartPre=mkdir -p /opt/nouci/.s
+          ExecStartPre=mkdir -p /mnt/nouci
           ExecStart=/bin/bash -c 'cp /etc/hostname /opt/nouci/.s/nouci_data_enc.key'
           ExecStart=cryptsetup luksFormat -q /opt/nouci/images/nouci_data.img --key-file /opt/nouci/.s/nouci_data_enc.key
           ExecStart=cryptsetup open /opt/nouci/images/nouci_data.img nouci_data_enc --key-file /opt/nouci/.s/nouci_data_enc.key
-          ExecStart=mkfs.xfs -L NOUCI_DATA /dev/mapper/nouci_data_enc
+          ExecStart=mkfs.ext4 -L NOUCI_DATA /dev/mapper/nouci_data_enc
           ExecStart=/bin/bash -c 'echo "nouci_data_enc /opt/nouci/images/nouci_data.img /opt/nouci/.s/nouci_data_enc.key timeout=8" | tee -a /etc/crypttab'
-          ExecStart=/bin/bash -c 'echo "LABEL=NOUCI_DATA /mnt/opt/nouci_data xfs defaults 0 2" | tee -a /etc/fstab'
+          ExecStart=/bin/bash -c 'echo "LABEL=NOUCI_DATA /mnt/nouci ext4 defaults 0 2" | tee -a /etc/fstab'
           ExecStart=systemctl daemon-reload
-          ExecStart=mount -a
+          ExecStart=mount -t ext4 -L NOUCI_DATA /mnt/nouci
           ExecStartPost=touch /opt/nouci/var/lock/nouci_data_enc.lock
-          ExecStartPost=touch /mnt/opt/nouci_data/ready
+          ExecStartPost=touch /mnt/nouci/.ready
           ExecStartPost=systemctl disable nouci_disk_enc_first_boot.service
           [Install]
           WantedBy=multi-user.target

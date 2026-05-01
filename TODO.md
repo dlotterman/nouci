@@ -20,3 +20,5 @@
 	- For anything not secret, abuse of sourcing /etc/defaults client side could help
 	- Could build a templater into the buildchain
 	- Current places this is most painful are snmp and grafana which have hardcoded paths to self-checkout git, which is exactly why you try to avoid this problem.
+
+- When re-do local-disk / disk-enc, should use systemd mount units instead of mangling fstab / crypt
